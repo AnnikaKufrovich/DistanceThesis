@@ -100,7 +100,10 @@ combined <- voters %>%
 combined <- left_join(combined, medinc.zipselect, by = "zipcode")
 
 #drop vars we don't want
-combine_clean<- combined%>% select(V1, female, age, precID, V25:V28, white, black, hispanic, dem, rep, npa, estimate)
+combine_clean<- combined%>% select(V1, female, age, precID, 
+                                   V25, white, black, hispanic, 
+                                   dem, rep, npa, estimate, lon, lat,
+                                   V5.x, voted2018, V5.y, voted2016)
 
 #comparing precID and other precinct variables to abrprecincts and fixing issues for haversine loop
 
