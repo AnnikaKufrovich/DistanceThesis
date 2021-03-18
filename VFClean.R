@@ -182,6 +182,6 @@ pollplace2018$abrprecincts <- if_else(pollplace2018$abr == "SUW",
 
 pollplace2018$abrprecincts <- str_replace(pollplace2018$abrprecincts, "WAS0", "WAS")
 
-#Write the file out as a .csv
+#Write the files out as a .csv
 write.csv(combine_clean, "2018voterscleaned.csv")
 write.csv(pollplace2018, "adjustgeo2018polls.csv")
