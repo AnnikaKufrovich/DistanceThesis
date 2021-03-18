@@ -100,7 +100,13 @@ combined <- voters %>%
 combined <- left_join(combined, medinc.zipselect, by = "zipcode")
 
 #drop vars we don't want
-combine_clean<- combined%>% select(female, age, precID, V25:V28, white, black, hispanic, dem, rep, npa, estimate)
+combine_clean<- combined%>% select(V1, female, age, precID, V25:V28, white, black, hispanic, dem, rep, npa, estimate)
+
+#comparing precID and other precinct variables to abrprecincts and fixing issues for haversine loop
+
+pollplace2018 <- read.csv("GEOCODED_2018PollPlace", header = TRUE)
+
+
 
 #Write the file out as a .csv
 #write.csv(, "2018voterscleaned.csv")
