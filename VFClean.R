@@ -54,9 +54,9 @@ voters <- voterdethist %>%
   mutate(voted2018 = ifelse(V5.x == "A", 1, 
                         ifelse(V5.x == "E", 1, 
                                ifelse(V5.x == "Y", 1, 0)))) %>%
-  mutate(voted2016 = ifelse(V5.x == "A", 1, 
-                            ifelse(V5.x == "E", 1, 
-                                   ifelse(V5.x == "Y", 1,  0)))) %>%
+  mutate(voted2016 = ifelse(V5.y == "A", 1, 
+                            ifelse(V5.y == "E", 1, 
+                                   ifelse(V5.y == "Y", 1,  0)))) %>%
   select(V1, V12, V20:V22, V24:V28, lon, lat, V5.x, voted2018, V5.y, voted2016)
 
 voters$V5.x[is.na(voters$V5.x)] = "N"

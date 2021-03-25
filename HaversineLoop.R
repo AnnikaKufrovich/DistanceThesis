@@ -38,7 +38,7 @@ haverloop <- function(voterdata, polldata, voterabrprecs,
       print(paste0(poll, ", poll #", pollcount, " skipped")) #notify that this poll was skipped
       next #next iteration
     }
-    results <- distHaversine(p1 = poll.ll, p2 = voters.ll) #calculate haversine distance between poll and its voters
+    results <- distHaversine(p1 = poll.ll, p2 = voters.ll) #calculate haversine distance between poll and its voters, in meters
     results.vec <- as_vector(results) #turn results into a vector
     voters$haverdistance <- results.vec #add the vector to voter data as a column
     final.calcs <- final.calcs %>% 
@@ -63,12 +63,21 @@ finaldata <- haverloop(voterdata = testvoters, polldata = testpolls,
 
 voterhaverdistances2018 <- haverloop(voterdata = combine_clean, 
                                      polldata = pollplace2018, 
-                                     voterabrprecs = "PrecID", 
+                                     voterabrprecs = "precID", 
                                      pollabrprecs = "abrprecincts", 
                                      georates = "geocode_rating")
 
+voterhd2018 <- voterhaverdistances2018 %>%
+  rename(V5.x = typeturnout2018, V5.y = typeturnout2016) %>%
+  select(-lon, -lat)
 
+voterhaverdistances2018 <- voterhaverdistances2018 %>%
+  mutate(voted2016b = ifelse(V5.y == "A", 1, 
+                                    ifelse(V5.y == "E", 1, 
+                                           ifelse(V5.y == "Y", 1,  0)))) %>%
+  select(-voted2016)
 
+write_csv(voterhaverdistances2018, "2018VoterHavDist.csv")
 
 
 ##code testing
