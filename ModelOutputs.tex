@@ -1,0 +1,43 @@
+Full simple Logit 2018
+
+Coefficients:
+                Estimate Std. Error  z value Pr(>|z|)
+(Intercept)   -2.676e+00  4.383e-03 -610.527   <2e-16 ***
+female         1.359e-03  1.518e-03    0.895    0.371
+age            2.006e-02  4.159e-05  482.274   <2e-16 ***
+white          1.636e-01  2.961e-03   55.251   <2e-16 ***
+black          3.064e-01  3.477e-03   88.134   <2e-16 ***
+hispanic      -2.432e-01  3.385e-03  -71.844   <2e-16 ***
+estimate       8.005e-06  4.557e-08  175.673   <2e-16 ***
+haverdistance -1.085e-07  8.529e-09  -12.725   <2e-16 ***
+voted2016b     2.289e+00  1.596e-03 1434.288   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 14040925  on 10342916  degrees of freedom
+Residual deviance: 10730506  on 10342908  degrees of freedom
+  (475234 observations deleted due to missingness)
+AIC: 10730524
+
+
+
+
+
+Variable Selection
+
+Backwards AIC
+
+Coefficients:
+  (Intercept)            age          white          black       hispanic
+   -2.675e+00      2.006e-02      1.637e-01      3.066e-01     -2.431e-01
+     estimate  haverdistance     voted2016b
+    8.005e-06     -1.085e-07      2.289e+00
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+  (475234 observations deleted due to missingness)
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+Backwards / Forwards same as above
