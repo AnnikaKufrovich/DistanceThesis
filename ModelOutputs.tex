@@ -18,14 +18,33 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
     Null deviance: 14040925  on 10342916  degrees of freedom
 Residual deviance: 10730506  on 10342908  degrees of freedom
-  (475234 observations deleted due to missingness)
 AIC: 10730524
+
+Number of Fisher Scoring iterations: 4
 
 
 
 
 
 Variable Selection
+
+Forwards AIC
+
+Call:  glm(formula = voted2018 ~ voted2016b + age + hispanic + estimate +
+    black + white + haverdistance, family = binomial(link = "logit"),
+    data = full.havdist2018.narm)
+
+Coefficients:
+  (Intercept)     voted2016b            age       hispanic       estimate
+   -2.675e+00      2.289e+00      2.006e-02     -2.431e-01      8.005e-06
+        black          white  haverdistance
+    3.066e-01      1.637e-01     -1.085e-07
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+
 
 Backwards AIC
 
@@ -36,8 +55,91 @@ Coefficients:
     8.005e-06     -1.085e-07      2.289e+00
 
 Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
-  (475234 observations deleted due to missingness)
 Null Deviance:	    14040000
 Residual Deviance: 10730000 	AIC: 10730000
 
-Backwards / Forwards same as above
+
+Backwards / Forwards
+
+Call:  glm(formula = voted2018 ~ age + white + black + hispanic + estimate +
+    haverdistance + voted2016b, family = binomial(link = "logit"),
+    data = full.havdist2018.narm)
+
+Coefficients:
+  (Intercept)            age          white          black       hispanic
+   -2.675e+00      2.006e-02      1.637e-01      3.066e-01     -2.431e-01
+     estimate  haverdistance     voted2016b
+    8.005e-06     -1.085e-07      2.289e+00
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+
+Forwards / Backwards
+
+Coefficients:
+  (Intercept)     voted2016b            age       hispanic       estimate
+   -2.675e+00      2.289e+00      2.006e-02     -2.431e-01      8.005e-06
+        black          white  haverdistance
+    3.066e-01      1.637e-01     -1.085e-07
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+
+
+
+BIC
+
+
+Forwards
+
+Coefficients:
+  (Intercept)     voted2016b            age       hispanic       estimate
+   -2.675e+00      2.289e+00      2.006e-02     -2.431e-01      8.005e-06
+        black          white  haverdistance
+    3.066e-01      1.637e-01     -1.085e-07
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+
+
+Backwards
+
+Coefficients:
+  (Intercept)            age          white          black       hispanic
+   -2.675e+00      2.006e-02      1.637e-01      3.066e-01     -2.431e-01
+     estimate  haverdistance     voted2016b
+    8.005e-06     -1.085e-07      2.289e+00
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
+
+
+Backwards / Forwards
+
+Coefficients:
+  (Intercept)            age          white          black       hispanic
+   -2.675e+00      2.006e-02      1.637e-01      3.066e-01     -2.431e-01
+     estimate  haverdistance     voted2016b
+    8.005e-06     -1.085e-07      2.289e+00
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 1s0730000 	AIC: 10730000
+
+Forwards / Backwards
+Coefficients:
+  (Intercept)     voted2016b            age       hispanic       estimate
+   -2.675e+00      2.289e+00      2.006e-02     -2.431e-01      8.005e-06
+        black          white  haverdistance
+    3.066e-01      1.637e-01     -1.085e-07
+
+Degrees of Freedom: 10342916 Total (i.e. Null);  10342909 Residual
+Null Deviance:	    14040000
+Residual Deviance: 10730000 	AIC: 10730000
