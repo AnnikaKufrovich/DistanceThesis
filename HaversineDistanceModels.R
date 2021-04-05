@@ -2,12 +2,35 @@ library(dplyr)
 library(RcmdrMisc)
 library(pryr)
 library(VGAM)
+library(randomForest)
 
-full.havdist.2018 <- read.csv("2018VoterHavDist.csv")
+full.havdist.2018 <- read.csv("Desktop/DistanceThesis/2018VoterHavDist.csv")
 
-full.havdist2018.narm <- na.omit(full.havdist.2018)
+full.havdist2018.narm <- na.omit(full.havdist.2018) %>% 
+  mutate(race.eth = ifelse(white == 1 , "White", 
+                       ifelse(black == 1, "Black", 
+                              ifelse(hispanic == 1, "Hispanic", "Other")))) %>%
+  select(-lon, -lat, -V1, - V25, -white, -black, -hispanic) %>% 
+  mutate(vt2018 = ifelse(V5.x == "Y", "Elday", 
+                         ifelse(V5.x == "E", "Early", 
+                                ifelse(V5.x == "A", "Mail", "N")))) %>%
+  mutate(vt2016 = ifelse(V5.y == "Y", "Elday", 
+                         ifelse(V5.y == "E", "Early", 
+                                ifelse(V5.y == "A", "Mail", "N"))))
 
 rm(full.havdist.2018) #removing to free up environment space
+
+full.havdist2018.narm$race.eth <- relevel(
+  as.factor(full.havdist2018.narm$race.eth), ref = "White")  
+
+
+#alternative datasets
+full.havdist2018.narmalt <- full.havdist2018.narm %>% 
+  mutate(vta2018 = ifelse(vt2018 == "Early", "Alt", 
+                          ifelse(vt2018 == "Mail", "Alt", vt2018))) %>%
+  mutate(vta2016 = ifelse(vt2016 == "Early", "Alt",
+                          ifelse(vt2016 == "Mail", "Alt", vt2016))) %>%
+  select(-vt2018, -vt2016)
 
 ratehd.40andless.2018 <- full.havdist2018.narm %>%
   filter(as.numeric(as.character(geopollrating)) <= 40)
@@ -16,70 +39,100 @@ ratehd.20andless.2018 <- full.havdist2018.narm %>%
   filter(as.numeric(as.character(geopollrating)) <= 20)
 
 
+
 ##clean environment as much as possible before running each
 ##they take up a lot of memory
 ##remember than distance is in meters
 
 ##estimate is income estimate
-simplelogit.hdfull <- glm(data = full.havdist2018.narm, 
+binomlogit.hdfull <- glm(data = full.havdist2018.narm, 
                           voted2018 ~ female + age + 
-                            white + black + hispanic + 
-                            estimate + haverdistance + 
-                            voted2016b, family = binomial(link = "logit"))
+                            race.eth + estimate + haverdistance + 
+                            voted2016b + race.eth*estimate
+                            , family = binomial(link = "logit"))
 
 ##AIC
 
-stepwise(simplelogit.hdfull, direction = "forward", criterion = "AIC")
+stepwise(binomlogit.hdfull, direction = "forward", criterion = "AIC")
 
-stepwise(simplelogit.hdfull, direction = "backward", criterion = "AIC")
+stepwise(binomlogit.hdfull, direction = "backward", criterion = "AIC")
 
-stepwise(simplelogit.hdfull, direction = "backward/forward", 
+stepwise(binomelogit.hdfull, direction = "backward/forward", 
          criterion = "AIC")
 
-stepwise(simplelogit.hdfull, direction = "forward/backward", 
+stepwise(binomlogit.hdfull, direction = "forward/backward", 
          criterion = "AIC")
 
 ##BIC
 
-stepwise(simplelogit.hdfull, direction = "forward", criterion = "BIC")
+stepwise(binomlogit.hdfull, direction = "forward", criterion = "BIC")
 
-stepwise(simplelogit.hdfull, direction = "backward", criterion = "BIC")
+stepwise(binomlogit.hdfull, direction = "backward", criterion = "BIC")
 
-stepwise(simplelogit.hdfull, direction = "backward/forward", 
+stepwise(binomlogit.hdfull, direction = "backward/forward", 
          criterion = "BIC")
 
-stepwise(simplelogit.hdfull, direction = "forward/backward", 
+stepwise(binomlogit.hdfull, direction = "forward/backward", 
          criterion = "BIC")
 
 
 ##remove logit from environment for space
 
-rm(simplelogit.hdfull)
+rm(binomlogit.hdfull)
 
 
 ##reduced
-simplelogit.hdfull <- glm(data = full.havdist2018.narm, 
-                          voted2018 ~ age + 
-                            white + black + hispanic + 
-                            estimate + haverdistance + 
-                            voted2016b, family = binomial(link = "logit"))
+##simplelogit.hdfull <- glm(data = full.havdist2018.narm, 
+##                          voted2018 ~ age + 
+##                            white + black + hispanic + 
+##                            estimate + haverdistance + 
+##                            voted2016b, family = binomial(link = "logit"))
 
 
+##Multiple logistic
+set.seed(58496)
+fhd.samp <- full.havdist2018.narm[sample(nrow(full.havdist2018.narm), 
+                                         size = 500000), ]
 
+
+##Works Now
 multilogit.hdfull <- vglm(data = full.havdist2018.narm, 
-                          formula = V5.x ~ female + age + 
-                            white + black + hispanic + 
-                            estimate + haverdistance + 
-                            voted2016b, 
+                          formula = vt2018 ~ female + age + 
+                            race.eth + estimate + haverdistance + 
+                            vt2016 + race.eth*estimate, 
                          family = multinomial(refLevel = "N"))
 
+#grouping mail and early as alternate vote to reduce size of vglm
+
+full.havdist2018.narmalt$race.eth <- relevel(
+  as.factor(full.havdist2018.narmalt$race.eth), ref = "White")  
+
+full.havdist2018.narmalt$vta2016 <- relevel(
+  as.factor(full.havdist2018.narmalt$vta2016), ref = "N")  
+
+multilogit.hdfull2 <- vglm(data = full.havdist2018.narmalt, 
+                          formula = vta2018 ~ female + age + 
+                            race.eth + estimate + haverdistance + 
+                            vta2016 + race.eth*estimate, 
+                          family = multinomial(refLevel = "N"))
+
+
+
+##Random Forest
+
+randomForest(data = full.havdist2018.narm, 
+             voted2018 ~ female + age + 
+               race.eth + estimate + haverdistance + 
+               voted2016b + race.eth*estimate, 
+             ntree = 10)
 
 
 
 
 #same model but most accurate geocoded polls
-simplelogit.hdfull <- vglm(data = ratehd.40andless.2018, 
-                          voted2018 ~ female + age + 
-                            white + black + hispanic + 
-                            estimate + haverdistance + 
-                            voted2016b, family = binomial(link = "logit"))
+
+binomlogit.hdfull <- glm(ratehd.20andless.2018, 
+                           voted2018 ~ female + age + 
+                             race.eth + estimate + haverdistance + 
+                             voted2016b + race.eth*estimate, 
+                           family = binomial(link = "logit"))
