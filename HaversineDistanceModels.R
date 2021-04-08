@@ -4,7 +4,7 @@ library(pryr)
 library(VGAM)
 library(randomForest)
 
-full.havdist.2018 <- read.csv("Desktop/DistanceThesis/2018VoterHavDist.csv")
+full.havdist.2018 <- read.csv("2018VoterHavDist.csv")
 
 full.havdist2018.narm <- na.omit(full.havdist.2018) %>% 
   mutate(race.eth = ifelse(white == 1 , "White", 
@@ -39,17 +39,23 @@ ratehd.20andless.2018 <- full.havdist2018.narm %>%
   filter(as.numeric(as.character(geopollrating)) <= 20)
 
 
+#removing ridiculous distances
+fhd2018.reasonable <- full.havdist2018.narm %>%
+  filter(haverdistance <= 8045) %>% 
+  mutate(hdistmiles = haverdistance/1609.34)
+
+
 
 ##clean environment as much as possible before running each
 ##they take up a lot of memory
 ##remember than distance is in meters
 
 ##estimate is income estimate
-binomlogit.hdfull <- glm(data = full.havdist2018.narm, 
+binomlogit.hdfull <- glm(data = fhd2018.reasonable, 
                           voted2018 ~ female + age + 
-                            race.eth + estimate + haverdistance + 
-                            voted2016b + race.eth*estimate
-                            , family = binomial(link = "logit"))
+                            race.eth + log(estimate) + hdistmiles + 
+                            voted2016b + race.eth*log(estimate), 
+                         family = binomial(link = "logit"))
 
 ##AIC
 
@@ -79,6 +85,17 @@ stepwise(binomlogit.hdfull, direction = "forward/backward",
 ##remove logit from environment for space
 
 rm(binomlogit.hdfull)
+
+fhd2018.stand <- full.havdist2018.narm %>%
+  mutate(s.inc = log(estimate)/sd(log(estimate)), 
+         s.hdist = log(haverdistance + 1)/sd(log(haverdistance + 1)), 
+         s.age = age/sd(age))
+
+binomlogit.stand <- glm(data = fhd2018.stand, 
+                         voted2018 ~ female + s.age + 
+                           race.eth + s.inc + s.hdist + 
+                           voted2016b + race.eth*s.inc
+                         , family = binomial(link = "logit"))
 
 
 ##reduced
@@ -120,11 +137,13 @@ multilogit.hdfull2 <- vglm(data = full.havdist2018.narmalt,
 
 ##Random Forest
 
-randomForest(data = full.havdist2018.narm, 
-             voted2018 ~ female + age + 
+set.seed(946853)
+
+rf.binom <- randomForest(data = full.havdist2018.narm, 
+             as.factor(voted2018) ~ female + age + 
                race.eth + estimate + haverdistance + 
                voted2016b + race.eth*estimate, 
-             ntree = 10)
+             ntree = 10, importance = TRUE)
 
 
 
