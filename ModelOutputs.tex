@@ -270,8 +270,35 @@ Coefficients:
    race.ethBlack:log(estimate)  race.ethHispanic:log(estimate)
                       0.052372                        0.134054
    race.ethOther:log(estimate)
-                     -0.055912  
+                     -0.055912
 
+
+Above but statndardized
+
+Coefficients:
+                         Estimate Std. Error  z value Pr(>|z|)
+(Intercept)            -6.7799855  0.0401607 -168.822  < 2e-16 ***
+female                  0.0037816  0.0016052    2.356   0.0185 *
+s.age                   0.3791294  0.0008438  449.313  < 2e-16 ***
+race.ethBlack          -0.4178124  0.0871515   -4.794 1.63e-06 ***
+race.ethHispanic       -1.8520291  0.0830967  -22.288  < 2e-16 ***
+race.ethOther           0.4528983  0.1130701    4.005 6.19e-05 ***
+s.inc                   0.1268836  0.0010723  118.328  < 2e-16 ***
+s.hdist                -0.0043135  0.0008056   -5.355 8.58e-08 ***
+voted2016b              2.2928452  0.0016878 1358.460  < 2e-16 ***
+race.ethBlack:s.inc     0.0153483  0.0023669    6.485 8.90e-11 ***
+race.ethHispanic:s.inc  0.0391304  0.0022342   17.514  < 2e-16 ***
+race.ethOther:s.inc    -0.0163653  0.0030319   -5.398 6.75e-08 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 12575511  on 9257344  degrees of freedom
+Residual deviance:  9605505  on 9257333  degrees of freedom
+AIC: 9605529
+
+Number of Fisher Scoring iterations: 4
 
 
 Multiple Logistic Regression:

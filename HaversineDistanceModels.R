@@ -86,12 +86,12 @@ stepwise(binomlogit.hdfull, direction = "forward/backward",
 
 rm(binomlogit.hdfull)
 
-fhd2018.stand <- full.havdist2018.narm %>%
+fhdr2018.stand <- fhd2018.reasonable %>%
   mutate(s.inc = log(estimate)/sd(log(estimate)), 
-         s.hdist = log(haverdistance + 1)/sd(log(haverdistance + 1)), 
+         s.hdist = haverdistance/sd(haverdistance), 
          s.age = age/sd(age))
 
-binomlogit.stand <- glm(data = fhd2018.stand, 
+binomlogit.stand <- glm(data = fhdr2018.stand, 
                          voted2018 ~ female + s.age + 
                            race.eth + s.inc + s.hdist + 
                            voted2016b + race.eth*s.inc
@@ -139,9 +139,9 @@ multilogit.hdfull2 <- vglm(data = full.havdist2018.narmalt,
 
 set.seed(946853)
 
-rf.binom <- randomForest(data = full.havdist2018.narm, 
+rf.binom <- randomForest(data = fhd2018.reasonable, 
              as.factor(voted2018) ~ female + age + 
-               race.eth + estimate + haverdistance + 
+               race.eth + log(estimate) + haverdistance + 
                voted2016b + race.eth*estimate, 
              ntree = 10, importance = TRUE)
 
