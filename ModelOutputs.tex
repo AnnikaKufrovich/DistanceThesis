@@ -273,8 +273,39 @@ Coefficients:
                      -0.055912
 
 
+Confidence intervals
+
+                                    2.5        97.5
+(Intercept)                    -6.8586989610 -6.701272086
+female                          0.0006355413  0.006927633
+age                             0.0196002160  0.019771963
+race.ethBlack                  -0.5886262109 -0.246998577
+race.ethHispanic               -2.0148956451 -1.689162503
+race.ethOther                   0.2312849410  0.674511661
+log(estimate)                   0.4273737469  0.441770144
+hdistmiles                     -0.0061934698 -0.002874310
+voted2016b                      2.2895371664  2.296153326
+race.ethBlack:log(estimate)     0.0366787807  0.068456170
+race.ethHispanic:log(estimate)  0.1190220779  0.149018213
+race.ethOther:log(estimate)    -0.0764032626 -0.035697635
 Above but statndardized
 
+exponentiated CI's
+
+(Intercept)                    0.001050279 0.001229347
+female                         1.000635743 1.006951684
+age                            1.019793561 1.019968723
+race.ethBlack                  0.555089337 0.781141805
+race.ethHispanic               0.133334317 0.184674123
+race.ethOther                  1.260218276 1.963074096
+log(estimate)                  1.533225593 1.555458168
+hdistmiles                     0.993825670 0.997129817
+voted2016b                     9.870368286 9.935888723
+race.ethBlack:log(estimate)    1.037359747 1.070853688
+race.ethHispanic:log(estimate) 1.126394786 1.160694129
+race.ethOther:log(estimate)    0.926442532 0.964932011
+
+Standardized stuff
 Coefficients:
                          Estimate Std. Error  z value Pr(>|z|)
 (Intercept)            -6.7799855  0.0401607 -168.822  < 2e-16 ***
@@ -312,3 +343,126 @@ Size was 18.8 gb
 Trying turnout levels: elday, alt, and n;
 Should reduce size ideally and since we are not including early voting distances
 it makes sense to me to group the "alternative" voting methods
+
+
+
+ElectionDay vs No vote
+
+Coefficients:
+                                 Estimate Std. Error  z value Pr(>|z|)
+(Intercept)                    -5.790e+00  4.990e-02 -116.041  < 2e-16 ***
+female                         -5.558e-03  2.023e-03   -2.747  0.00601 **
+age                             8.935e-03  5.523e-05  161.767  < 2e-16 ***
+race.ethBlack                   3.104e-01  1.116e-01    2.782  0.00541 **
+race.ethHispanic               -1.880e+00  1.057e-01  -17.779  < 2e-16 ***
+race.ethOther                   3.612e-01  1.439e-01    2.509  0.01209 *
+log(estimate)                   3.222e-01  4.563e-03   70.614  < 2e-16 ***
+hdistmiles                     -4.026e-02  1.070e-03  -37.634  < 2e-16 ***
+vta2016Alt                      1.746e+00  2.545e-03  685.977  < 2e-16 ***
+vta2016Elday                    2.489e+00  2.524e-03  986.089  < 2e-16 ***
+race.ethBlack:log(estimate)    -2.765e-02  1.039e-02   -2.662  0.00777 **
+race.ethHispanic:log(estimate)  1.380e-01  9.736e-03   14.174  < 2e-16 ***
+race.ethOther:log(estimate)    -5.572e-02  1.322e-02   -4.215 2.49e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 7365882  on 5786426  degrees of freedom
+Residual deviance: 5947913  on 5786414  degrees of freedom
+AIC: 5947939
+
+Number of Fisher Scoring iterations: 4
+
+
+Confidence intervals
+
+                                    2.5       97.5
+(Intercept)                    -5.888283580 -5.692677423
+female                         -0.009523731 -0.001592528
+age                             0.008826400  0.009042904
+race.ethBlack                   0.091712913  0.529168952
+race.ethHispanic               -2.087192747 -1.672705402
+race.ethOther                   0.079086700  0.643315393
+log(estimate)                   0.313260708  0.331146967
+hdistmiles                     -0.042356992 -0.038163466
+vta2016Alt                      1.740735919  1.750711631
+vta2016Elday                    2.484175606  2.494070437
+race.ethBlack:log(estimate)    -0.048002926 -0.007289229
+race.ethHispanic:log(estimate)  0.118921111  0.157085932
+race.ethOther:log(estimate)    -0.081634354 -0.029815553
+
+exponentiated ci's
+(Intercept)                     0.00277173  0.003370556
+female                          0.99052148  0.998408740
+age                             1.00886547  1.009083914
+race.ethBlack                   1.09605012  1.697521000
+race.ethHispanic                0.12403484  0.187738470
+race.ethOther                   1.08229815  1.902778893
+log(estimate)                   1.36787810  1.392564438
+hdistmiles                      0.95852753  0.962555583
+vta2016Alt                      5.70153775  5.758699285
+vta2016Elday                   11.99123068 12.110470834
+race.ethBlack:log(estimate)     0.95313100  0.992737273
+race.ethHispanic:log(estimate)  1.12628106  1.170096158
+race.ethOther:log(estimate)     0.92160888  0.970624546
+Alternative Vote vs no vote
+
+Coefficients:
+                                 Estimate Std. Error  z value Pr(>|z|)
+(Intercept)                    -8.225e+00  4.737e-02 -173.647  < 2e-16 ***
+female                         -1.791e-02  1.895e-03   -9.453  < 2e-16 ***
+age                             2.506e-02  5.151e-05  486.580  < 2e-16 ***
+race.ethBlack                  -5.143e-01  1.026e-01   -5.014 5.34e-07 ***
+race.ethHispanic               -2.031e+00  9.973e-02  -20.363  < 2e-16 ***
+race.ethOther                   4.955e-01  1.360e-01    3.643 0.000269 ***
+log(estimate)                   4.846e-01  4.325e-03  112.054  < 2e-16 ***
+hdistmiles                      1.608e-02  9.990e-04   16.102  < 2e-16 ***
+vta2016Alt                      2.826e+00  2.179e-03 1297.044  < 2e-16 ***
+vta2016Elday                    1.316e+00  2.792e-03  471.214  < 2e-16 ***
+race.ethBlack:log(estimate)     6.881e-02  9.534e-03    7.217 5.31e-13 ***
+race.ethHispanic:log(estimate)  1.449e-01  9.178e-03   15.785  < 2e-16 ***
+race.ethOther:log(estimate)    -6.001e-02  1.248e-02   -4.808 1.53e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 10139467  on 7328826  degrees of freedom
+Residual deviance:  7009278  on 7328814  degrees of freedom
+AIC: 7009304
+
+Number of Fisher Scoring iterations: 4
+
+
+Confidence intervals
+
+                                    2.5        97.5 %
+(Intercept)                    -5.888283580 -5.692677423
+female                         -0.009523731 -0.001592528
+age                             0.008826400  0.009042904
+race.ethBlack                   0.091712913  0.529168952
+race.ethHispanic               -2.087192747 -1.672705402
+race.ethOther                   0.079086700  0.643315393
+log(estimate)                   0.313260708  0.331146967
+hdistmiles                     -0.042356992 -0.038163466
+vta2016Alt                      1.740735919  1.750711631
+vta2016Elday                    2.484175606  2.494070437
+race.ethBlack:log(estimate)    -0.048002926 -0.007289229
+race.ethHispanic:log(estimate)  0.118921111  0.157085932
+race.ethOther:log(estimate)    -0.081634354 -0.029815553
+
+exponentiate ci's
+(Intercept)                    2.441704e-04 2.939867e-04
+female                         9.786041e-01 9.859009e-01
+age                            1.025277e+00 1.025484e+00
+race.ethBlack                  4.890530e-01 7.310897e-01
+race.ethHispanic               1.079287e-01 1.595594e-01
+race.ethOther                  1.257266e+00 2.142816e+00
+log(estimate)                  1.609860e+00 1.637385e+00
+hdistmiles                     1.014227e+00 1.018207e+00
+vta2016Alt                     1.680200e+01 1.694610e+01
+vta2016Elday                   3.707049e+00 3.747846e+00
+race.ethBlack:log(estimate)    1.051399e+00 1.091436e+00
+race.ethHispanic:log(estimate) 1.135285e+00 1.176874e+00
+race.ethOther:log(estimate)    9.189892e-01 9.650759e-01

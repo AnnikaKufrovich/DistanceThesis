@@ -42,9 +42,26 @@ ratehd.20andless.2018 <- full.havdist2018.narm %>%
 #removing ridiculous distances
 fhd2018.reasonable <- full.havdist2018.narm %>%
   filter(haverdistance <= 8045) %>% 
-  mutate(hdistmiles = haverdistance/1609.34)
+  mutate(hdistmiles = haverdistance/1609.34) %>% 
+  mutate(vta2018 = ifelse(vt2018 == "Early", "Alt", 
+                          ifelse(vt2018 == "Mail", "Alt", vt2018))) %>%
+  mutate(vta2016 = ifelse(vt2016 == "Early", "Alt", 
+                          ifelse(vt2016 == "Mail", "Alt", vt2016)))
+
+fhd2018r.eldayn <- fhd2018.reasonable %>%
+  filter(vta2018 != "Alt") %>% 
+  mutate(vta2018en = ifelse(vta2018 == "Elday", 1, 0))
+
+fhd2018r.altn <- fhd2018.reasonable %>% 
+  filter(vta2018 != "Elday")  %>% 
+  mutate(vta2018an = ifelse(vta2018 == "Alt", 1, 0))
 
 
+fhd2018r.altn$vta2016 <- relevel(
+  as.factor(fhd2018r.altn$vta2016), ref = "N") 
+
+fhd2018r.eldayn$vta2016 <- relevel(
+  as.factor(fhd2018r.eldayn$vta2016), ref = "N")
 
 ##clean environment as much as possible before running each
 ##they take up a lot of memory
@@ -56,6 +73,10 @@ binomlogit.hdfull <- glm(data = fhd2018.reasonable,
                             race.eth + log(estimate) + hdistmiles + 
                             voted2016b + race.eth*log(estimate), 
                          family = binomial(link = "logit"))
+
+hv <- hatvalues(binomlogit.hdfull)
+
+plot(hatvalues(binomlogit.hdfull), type = "h")
 
 ##AIC
 
@@ -107,6 +128,23 @@ binomlogit.stand <- glm(data = fhdr2018.stand,
 
 
 ##Multiple logistic
+
+##piecemeal version
+
+multlogit1.elday <- glm(data = fhd2018r.eldayn, 
+                         vta2018en ~ female + age + 
+                           race.eth + log(estimate) + hdistmiles + 
+                           vta2016 + race.eth*log(estimate), 
+                         family = binomial(link = "logit"))
+
+
+multlogit2.alt <- glm(data = fhd2018r.altn, 
+                        vta2018an ~ female + age + 
+                          race.eth + log(estimate) + hdistmiles + 
+                          vta2016 + race.eth*log(estimate), 
+                        family = binomial(link = "logit"))
+
+
 set.seed(58496)
 fhd.samp <- full.havdist2018.narm[sample(nrow(full.havdist2018.narm), 
                                          size = 500000), ]
