@@ -3,6 +3,7 @@ library(RcmdrMisc)
 library(pryr)
 library(VGAM)
 library(randomForest)
+library(rpart)
 
 full.havdist.2018 <- read.csv("2018VoterHavDist.csv")
 
@@ -63,6 +64,33 @@ fhd2018r.altn$vta2016 <- relevel(
 fhd2018r.eldayn$vta2016 <- relevel(
   as.factor(fhd2018r.eldayn$vta2016), ref = "N")
 
+#elday, mail, early
+fhd2018r.eldayn <- fhd2018.reasonable %>%
+  filter(vta2018 != "Alt") %>% 
+  mutate(vta2018en = ifelse(vta2018 == "Elday", 1, 0)) 
+
+
+fhd2018r.mailn <- fhd2018.reasonable %>% 
+  filter(vt2018 != "Elday")  %>% 
+  filter(vt2018 != "Early") %>%
+  mutate(vta2018mn = ifelse(vt2018 == "Mail", 1, 0))
+
+
+fhd2018r.earlyn <- fhd2018.reasonable %>% 
+  filter(vt2018 != "Elday")  %>% 
+  filter(vt2018 != "Mail") %>%
+  mutate(vta2018e2n = ifelse(vt2018 == "Early", 1, 0))
+
+
+fhd2018r.eldayn$vt2016 <- relevel(
+  as.factor(fhd2018r.eldayn$vt2016), ref = "N")
+
+fhd2018r.mailn$vt2016 <- relevel(
+  as.factor(fhd2018r.mailn$vt2016), ref = "N") 
+
+fhd2018r.earlyn$vt2016 <- relevel(
+  as.factor(fhd2018r.earlyn$vt2016), ref = "N") 
+
 ##clean environment as much as possible before running each
 ##they take up a lot of memory
 ##remember than distance is in meters
@@ -74,9 +102,13 @@ binomlogit.hdfull <- glm(data = fhd2018.reasonable,
                             voted2016b + race.eth*log(estimate), 
                          family = binomial(link = "logit"))
 
-hv <- hatvalues(binomlogit.hdfull)
+cv.bl <- cv.glm(fhd2018.reasonable, binomlogit.hdfull, K = 10)
 
-plot(hatvalues(binomlogit.hdfull), type = "h")
+cv.bl$delta[1]
+
+#hv <- hatvalues(binomlogit.hdfull)
+
+#plot(hatvalues(binomlogit.hdfull), type = "h")
 
 ##AIC
 
@@ -119,6 +151,7 @@ binomlogit.stand <- glm(data = fhdr2018.stand,
                          , family = binomial(link = "logit"))
 
 
+
 ##reduced
 ##simplelogit.hdfull <- glm(data = full.havdist2018.narm, 
 ##                          voted2018 ~ age + 
@@ -142,6 +175,27 @@ multlogit2.alt <- glm(data = fhd2018r.altn,
                         vta2018an ~ female + age + 
                           race.eth + log(estimate) + hdistmiles + 
                           vta2016 + race.eth*log(estimate), 
+                        family = binomial(link = "logit"))
+
+##Now with elday, early, mail
+
+multlogit1.elday <- glm(data = fhd2018r.eldayn, 
+                        vta2018en ~ female + age + 
+                          race.eth + log(estimate) + hdistmiles + 
+                          vt2016 + race.eth*log(estimate), 
+                        family = binomial(link = "logit"))
+
+
+multlogit2.early <- glm(data = fhd2018r.earlyn, 
+                      vta2018e2n ~ female + age + 
+                        race.eth + log(estimate) + hdistmiles + 
+                        vt2016 + race.eth*log(estimate), 
+                      family = binomial(link = "logit"))
+
+multlogit3.mail <- glm(data = fhd2018r.mailn, 
+                        vta2018mn ~ female + age + 
+                          race.eth + log(estimate) + hdistmiles + 
+                          vt2016 + race.eth*log(estimate), 
                         family = binomial(link = "logit"))
 
 
@@ -177,13 +231,21 @@ multilogit.hdfull2 <- vglm(data = full.havdist2018.narmalt,
 
 set.seed(946853)
 
-rf.binom <- randomForest(data = fhd2018.reasonable, 
+samp.rf <- fhd2018.reasonable[sample(1:nrow(fhd2018.reasonable), 2500000),] %>%
+  mutate(l.inc = log(estimate))
+
+rf.binom <- randomForest(data = samp.rf, 
              as.factor(voted2018) ~ female + age + 
-               race.eth + log(estimate) + haverdistance + 
-               voted2016b + race.eth*estimate, 
-             ntree = 10, importance = TRUE)
+               race.eth + l.inc + haverdistance + 
+               voted2016b + race.eth*l.inc, 
+             ntree = 50, importance = TRUE)
 
 
+##+ race.eth*log(estimate) removed because help file says 
+##rf.binom2 <- rpart(data = fhd2018.reasonable, 
+##             formula = as.factor(voted2018) ~ female + age + 
+##               race.eth + log(estimate) + haverdistance + 
+##               voted2016b)
 
 
 #same model but most accurate geocoded polls
