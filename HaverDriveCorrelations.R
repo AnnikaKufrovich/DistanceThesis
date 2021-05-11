@@ -1,6 +1,10 @@
 library(dplyr)
 library(ggplot2)
 
+#to look at the correlation between Haversine distances and OSRM Driving distances
+
+#Can join data this way or load the both distances data created from OSRMDistanceCalcs.R
+
 haverdistances <- read.csv("2018VoterHavDist.csv")
 
 
@@ -11,14 +15,15 @@ bothdistances <- voterosrmdistances2018 %>%
 bothdistances <- fdd2018.reasonable %>% 
   select(drivedistance, haverdistance, precID)
 
+
+#initial correlation
 cor(na.omit(bothdistances[,1:2]))
 
+#expoloratory plot that is not very useful
 #plot(data = bothdistances, drivedistance ~ haverdistance)
 
 
-cor(na.omit(bothdistances.filter[,1:2]))
-
-
+#pretty correlation plot
 cors <- ggplot(data = bothdistances, 
                mapping = aes(x = haverdistance, y = drivedistance)) + 
   geom_point(alpha = 0.1, fill = NA) + 
@@ -27,10 +32,10 @@ cors <- ggplot(data = bothdistances,
        y = "Driving Distances (meters)")
 cors + theme_classic() #+ geom_hline(yintercept = 10000) + geom_vline(xintercept = 3000)
 
+#commented out lines are to help pinpoint weird date
 
 
-
-
+#figuting out precincts contibuting to the weird stream in the lower left
 weird.data <- fdd2018.reasonable %>% 
   filter(haverdistance < 3150) %>%
   filter(drivedistance > 10000) %>%
@@ -43,7 +48,7 @@ weird.data2 <- bothdistances %>%
   filter(drivedistance < 15000)
 
 
-
+# filtering out higest contributing weird precincts
 bothdistances.filter <- bothdistances %>%
   filter(precID != "LEE46") %>%
   filter(precID != "PAL1244") %>%
@@ -54,6 +59,11 @@ bothdistances.filter <- bothdistances %>%
   filter(precID != "BROW020")
 
 
+#correlation
+cor(na.omit(bothdistances.filter[,1:2]))
+
+
+#prettyplot take 2
 cors <- ggplot(data = bothdistances.filter, 
                mapping = aes(x = haverdistance, y = drivedistance)) + 
   geom_point(alpha = 0.1, fill = NA) + 
