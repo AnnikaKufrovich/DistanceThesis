@@ -67,10 +67,6 @@ voterhaverdistances2018 <- haverloop(voterdata = combine_clean,
                                      pollabrprecs = "abrprecincts", 
                                      georates = "geocode_rating")
 
-voterhd2018 <- voterhaverdistances2018 %>%
-  rename(V5.x = typeturnout2018, V5.y = typeturnout2016) %>%
-  select(-lon, -lat)
-
 voterhaverdistances2018 <- voterhaverdistances2018 %>%
   mutate(voted2016b = ifelse(V5.y == "A", 1, 
                                     ifelse(V5.y == "E", 1, 

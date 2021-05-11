@@ -54,6 +54,19 @@ new.predvs <- ifelse(new.pred >= 0.5, TRUE, FALSE)
 table(new.predvs, norm.predvs)
 
 
+fhd2018.reasonable.plus2.5mile <- fhd2018.reasonable
+fhd2018.reasonable.plus2.5mile$hdistmiles <- fhd2018.reasonable.plus2.5mile$hdistmiles + 2.5
+
+
+new.pred <- predict(binomlogit.hdfull, newdata = fhd2018.reasonable.plus2.5mile, 
+                    type = "response")
+
+new.predvs <- ifelse(new.pred >= 0.5, TRUE, FALSE)
+
+table(new.predvs, norm.predvs)
+
+
+
 actual.votes <- ifelse(fhd2018.reasonable$voted2018 == 1, TRUE, FALSE)
 
 table(norm.predvs, actual.votes)

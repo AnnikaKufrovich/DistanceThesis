@@ -100,3 +100,30 @@ voterdrive2018 <- voterosrmdistances2018 %>%
   select(-voted2016, -lon, -lat)
 
 write_csv(voterdrive2018, "2018VoterDriveDist.csv")
+
+
+
+voterhaverdrivedistances2018 <- haverloop(voterdata = voterclean, 
+                                     polldata = pollplace2018, 
+                                     voterabrprecs = "precID", 
+                                     pollabrprecs = "abrprecincts", 
+                                     georates = "geocode_rating")
+
+voterhaverdistances2018 <- voterhaverdrivedistances2018 %>%
+  mutate(voted2016b = ifelse(V5.y == "A", 1, 
+                             ifelse(V5.y == "E", 1, 
+                                    ifelse(V5.y == "Y", 1,  0)))) %>%
+  select(-voted2016)
+
+write_csv(voterhaverdistances2018, "2018VoterHaverDist2.csv")
+
+
+haver.id <- voterhaverdistances2018 %>%
+  select(X, haverdistance)
+
+
+voterbothdistances2018  <- full.drivedist.2018 %>%
+  left_join(haver.id)
+  
+
+write_csv(voterbothdistances2018, "2018VoterBothDist.csv")

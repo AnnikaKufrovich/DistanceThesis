@@ -1,15 +1,19 @@
 nrow(fhd2018.reasonable)
 
-set.seed(189246)
-
-#samp.ord <- sample(1:nrow(fhd2018.reasonable))
-
 #try 3 sub samples each of various sizes to check pvals
 #then automate for whole data set if needed
 
-samp1 <- fhd2018.reasonable[sample(1:nrow(fhd2018.reasonable), 500000),]
-samp2 <- fhd2018.reasonable[sample(1:nrow(fhd2018.reasonable), 500000),]
-samp3 <- fhd2018.reasonable[sample(1:nrow(fhd2018.reasonable), 500000),]
+#same seeded sample for random forest
+set.seed(795861)
+samp.rf <- fhd2018.reasonable[sample(1:nrow(fhd2018.reasonable), 2500000),] %>%
+  mutate(l.inc = log(estimate))
+
+samp1 <- samp.rf %>% slice_head(prop = .2)
+samp.rf <- samp.rf %>% slice_tail(prop = 0.8)
+
+samp2 <- samp.rf %>% slice_head(prop = .25)
+
+samp3 <- samp.rf %>% slice_tail(prop = 0.25)
 
 
 binomlogit1 <- glm(data = samp1, 
