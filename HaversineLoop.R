@@ -6,6 +6,10 @@ library(geosphere)
 library(sf)
 library(tigris)
 
+
+#fake data that I used to test the Haversine loop 
+#includes all possible NA/missing value combinations that
+#I thought the loop moght encounter
 testpolls <- data.frame(abrprecs = c("ALA1", "ALA2", "BAY3", "CAL1", "CAL2"),
                         longitude = c(20, 21, 24, NA, NA), 
                         latitude = c(30, 30, 34, NA, NA), 
@@ -33,7 +37,8 @@ haverloop <- function(voterdata, polldata, voterabrprecs,
       select(lon, lat) #longitude and latitude of matching voters only
     if(nrow(voters.ll) == 0){ #if there are no matching voters..
       final.calcs <- final.calcs %>% 
-        full_join(voters) #join to final data frame
+        full_join(voters) #join to final data frame, 
+      #the above step is probably not necessary but just in case there's an error it doesn't hurt anything
       pollcount <- pollcount + 1 #add to the poll count
       print(paste0(poll, ", poll #", pollcount, " skipped")) #notify that this poll was skipped
       next #next iteration
@@ -46,10 +51,11 @@ haverloop <- function(voterdata, polldata, voterabrprecs,
     pollcount <- pollcount + 1 #add to pollcount
     print(pollcount) #let me know what poll we are on
   }
-  return(final.calcs)
+  return(final.calcs) #return the final data frame, 
+  #make sure that you assign the function to an object otherwise the effort disappears
 }
 
-
+#haverloop testing
 haverloop(voterdata = testvoters, polldata = testpolls, 
           voterabrprecs = "precid", 
           pollabrprecs = "abrprecs", 
@@ -61,13 +67,25 @@ finaldata <- haverloop(voterdata = testvoters, polldata = testpolls,
                        georates = "georating")
 
 
+#if not doing this immediately after cleaning file make sure to load in data
+#combine_clean <- read.csv("2018voterscleaned.csv")
+#pollplace2018 <- read.csv("adjustgeo2018polls.csv")
+#note that sometimes R has trouble loading these files so it may be easier
+#to run VFclean file and clean up excess in the environment prior to running
+#the loop
+
+#running on our cleaned voterfile data
 voterhaverdistances2018 <- haverloop(voterdata = combine_clean, 
                                      polldata = pollplace2018, 
                                      voterabrprecs = "precID", 
                                      pollabrprecs = "abrprecincts", 
                                      georates = "geocode_rating")
 
-voterhaverdistances2018 <- voterhaverdistances2018 %>%
+#there was initially an error in how I coded voted2016, this fixes it
+#while I have fixed the code in the cleaning file this stays so that
+#you don't have to manually adjust each model using this variable
+
+voterhaverdistances2018 <- voterhaverdistances2018 %>% 
   mutate(voted2016b = ifelse(V5.y == "A", 1, 
                                     ifelse(V5.y == "E", 1, 
                                            ifelse(V5.y == "Y", 1,  0)))) %>%
@@ -76,7 +94,7 @@ voterhaverdistances2018 <- voterhaverdistances2018 %>%
 write_csv(voterhaverdistances2018, "2018VoterHavDist.csv")
 
 
-##code testing
+##code testing below
 #poll <- testpolls$abrprecs[1] # taking first row
 #poll.ll <- testpolls[1,] %>% select(longitude, latitude)
 
