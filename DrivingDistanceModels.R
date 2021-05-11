@@ -5,8 +5,13 @@ library(VGAM)
 library(boot)
 
 
+##all of this code is very similar to the haversine distance models with small adjustments
+##if you understand works in that file, this should be easier as there is less overall
+
+#loading both distance data
 full.drivedist.2018 <- read.csv("2018VoterBothDist.csv")
 
+#removing excess NA values and recoding both race/ethnicity and vote type
 full.drivedist2018.narm <- na.omit(full.drivedist.2018) %>% 
   mutate(race.eth = ifelse(white == 1 , "White", 
                            ifelse(black == 1, "Black", 
@@ -21,11 +26,13 @@ full.drivedist2018.narm <- na.omit(full.drivedist.2018) %>%
 
 rm(full.drivedist.2018) #removing to free up environment space
 
+#releveling race/ethnicity so that white is the baseline
 full.drivedist2018.narm$race.eth <- relevel(
   as.factor(full.drivedist2018.narm$race.eth), ref = "White")  
 
 
-#Making distances in miles and limiting distances
+#Making driving distances in miles and limiting distances, based on haversine
+#this ensures similar data is used
 
 fdd2018.reasonable <- full.drivedist2018.narm %>%
   mutate(ddistmiles = drivedistance/1609.34) %>% 
@@ -42,6 +49,8 @@ fdd2018.reasonable <- full.drivedist2018.narm %>%
 
 rm(full.drivedist2018.narm)
 
+
+#version of above without weird precincts
 fdd2018r.noweirdprec <- fdd2018.reasonable %>% 
   filter(precID != "LEE46") %>%
   filter(precID != "PAL1244") %>%
@@ -58,27 +67,34 @@ fdd2018r.noweirdprec <- fdd2018.reasonable %>%
 ##remember than distance is in meters
 
 ##estimate is income estimate
+
+#main binomial logitsic model
 binomlogit.ddfull <- glm(data = fdd2018.reasonable, 
                          voted2018 ~ female + age + 
                            race.eth + log(estimate) + ddistmiles + 
                            voted2016b + race.eth*log(estimate), 
                          family = binomial(link = "logit"))
 
+#above but without the weird precincts
 binomlogit.ddfull <- glm(data = fdd2018r.noweirdprec, 
                          voted2018 ~ female + age + 
                            race.eth + log(estimate) + ddistmiles + 
                            race.eth*log(estimate), 
                          family = binomial(link = "logit"))
 
+#defining cost function for misclassification error rate
 cost.func <- function(r, pi = 0) {
   mean((pi < 0.5) & r == 1 | (pi >= 0.5) & r == 0)
 }
 
+#cross-validated error rate
 set.seed(795861)
 cv.bl <- cv.glm(fdd2018.reasonable, binomlogit.ddfull, cost = cost.func, K = 10)
 
 cv.bl$delta[1]
 
+
+#model with squared distance
 binomlogit.ddfull.square <- glm(data = fdd2018.reasonable, 
                          voted2018 ~ female + age + 
                            race.eth + log(estimate) + 
@@ -86,6 +102,7 @@ binomlogit.ddfull.square <- glm(data = fdd2018.reasonable,
                            voted2016b + race.eth*log(estimate), 
                          family = binomial(link = "logit"))
 
+#model with race distance interaction
 binomlogit.ddfullinter2 <- glm(data = fdd2018.reasonable, 
                          voted2018 ~ female + age + 
                            race.eth + log(estimate) + ddistmiles + 
@@ -99,12 +116,9 @@ cv.bl$delta[1]
 
 
 
-
-
-
 ##multinomial logistic regression
 
-##setting up pairwise things because of haversine
+##setting up pairwise things because of what happened with haversine models
 
 fdd2018r.eldayn <- fdd2018.reasonable %>%
   filter(vta2018 != "Alt") %>% 
@@ -120,6 +134,25 @@ fdd2018r.altn$vta2016 <- relevel(
 
 fdd2018r.eldayn$vta2016 <- relevel(
   as.factor(fdd2018r.eldayn$vta2016), ref = "N")
+
+
+##Regressions for elday and alternative
+
+multlogit1.elday <- glm(data = fdd2018r.eldayn, 
+                        vta2018en ~ female + age + 
+                          race.eth + log(estimate) + ddistmiles + 
+                          vta2016 + race.eth*log(estimate), 
+                        family = binomial(link = "logit"))
+
+
+multlogit2.alt <- glm(data = fdd2018r.altn, 
+                      vta2018an ~ female + age + 
+                        race.eth + log(estimate) + ddistmiles + 
+                        vta2016 + race.eth*log(estimate), 
+                      family = binomial(link = "logit"))
+
+
+##Now with elday, early, mail
 
 #elday, mail, early
 fdd2018r.eldayn <- fdd2018.reasonable %>%
@@ -148,26 +181,7 @@ fdd2018r.mailn$vt2016 <- relevel(
 fdd2018r.earlyn$vt2016 <- relevel(
   as.factor(fdd2018r.earlyn$vt2016), ref = "N") 
 
-
-
-###Regressions
-
-
-multlogit1.elday <- glm(data = fdd2018r.eldayn, 
-                        vta2018en ~ female + age + 
-                          race.eth + log(estimate) + ddistmiles + 
-                          vta2016 + race.eth*log(estimate), 
-                        family = binomial(link = "logit"))
-
-
-multlogit2.alt <- glm(data = fdd2018r.altn, 
-                      vta2018an ~ female + age + 
-                        race.eth + log(estimate) + ddistmiles + 
-                        vta2016 + race.eth*log(estimate), 
-                      family = binomial(link = "logit"))
-
-##Now with elday, early, mail
-
+#regressions
 multlogit1.elday <- glm(data = fdd2018r.eldayn, 
                         vta2018en ~ female + age + 
                           race.eth + log(estimate) + ddistmiles + 
