@@ -12,36 +12,42 @@ bothdistances <- voterosrmdistances2018 %>%
   left_join(id.havdist, by = "X") %>%
   select(drivedistance, haverdistance, precID, geopollrating)
 
-bothdistances <- fdd2018.reasonable %>% 
-  select(drivedistance, haverdistance, precID)
+#alternative loading
+#bothdistances <- read.csv("2018VoterBothDist.csv")
 
+bothdistances2 <- na.omit(bothdistances) %>% 
+  select(drivedistance, haverdistance, precID) %>% 
+  mutate(drivemiles = drivedistance/1609.34, 
+         havermiles = haverdistance/1609.34) %>% 
+  filter(haverdistance <= 8045)
+  
 
 #initial correlation
-cor(na.omit(bothdistances[,1:2]))
+cor(na.omit(bothdistances2[,4:5]))
 
 #expoloratory plot that is not very useful
 #plot(data = bothdistances, drivedistance ~ haverdistance)
 
 
 #pretty correlation plot
-cors <- ggplot(data = bothdistances, 
-               mapping = aes(x = haverdistance, y = drivedistance)) + 
+cors <- ggplot(data = bothdistances2, 
+               mapping = aes(x = havermiles, y = drivemiles)) + 
   geom_point(alpha = 0.1, fill = NA) + 
   labs(title = "Haversine and Driving Distances", 
-       x = "Haversine Distances (meters)", 
-       y = "Driving Distances (meters)")
+       x = "Haversine Distances (miles)", 
+       y = "Driving Distances (miles)")
 cors + theme_classic() #+ geom_hline(yintercept = 10000) + geom_vline(xintercept = 3000)
 
 #commented out lines are to help pinpoint weird date
 
 
 #figuting out precincts contibuting to the weird stream in the lower left
-weird.data <- fdd2018.reasonable %>% 
+weird.data <- bothdistances2 %>% 
   filter(haverdistance < 3150) %>%
   filter(drivedistance > 10000) %>%
   filter(drivedistance < 15000)
 
-weird.data2 <- bothdistances %>%
+weird.data2 <- bothdistances2 %>%
   filter(precID != "LEE46") %>%
   filter(haverdistance < 2000) %>%
   filter(drivedistance > 10000) %>%
@@ -49,7 +55,7 @@ weird.data2 <- bothdistances %>%
 
 
 # filtering out higest contributing weird precincts
-bothdistances.filter <- bothdistances %>%
+bothdistances.filter <- bothdistances2 %>%
   filter(precID != "LEE46") %>%
   filter(precID != "PAL1244") %>%
   filter(precID != "PAL1242") %>%
@@ -60,14 +66,14 @@ bothdistances.filter <- bothdistances %>%
 
 
 #correlation
-cor(na.omit(bothdistances.filter[,1:2]))
+cor(na.omit(bothdistances.filter[,4:5]))
 
 
 #prettyplot take 2
 cors <- ggplot(data = bothdistances.filter, 
-               mapping = aes(x = haverdistance, y = drivedistance)) + 
+               mapping = aes(x = havermiles, y = drivemiles)) + 
   geom_point(alpha = 0.1, fill = NA) + 
   labs(title = "Haversine and Driving Distances", 
-       x = "Haversine Distances (meters)", 
-       y = "Driving Distances (meters)")
+       x = "Haversine Distances (miles)", 
+       y = "Driving Distances (miles)")
 cors + theme_classic()

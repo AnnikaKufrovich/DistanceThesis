@@ -139,6 +139,11 @@ binomlogit.hdfullinter1 <- glm(data = fhd2018.reasonable,
 
 
 ### (distance and race interaction)
+fhd2018.reasonable$race.eth <- factor(
+  x = fhd2018.reasonable$race.eth, levels = c("Black", "White", 
+                                            "Other", "Hispanic"))  
+
+
 binomlogit.hdfullinter2 <- glm(data = fhd2018.reasonable, 
                                voted2018 ~ female + age + 
                                  race.eth + log(estimate) + hdistmiles + 
