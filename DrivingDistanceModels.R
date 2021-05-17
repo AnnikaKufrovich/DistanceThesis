@@ -76,10 +76,10 @@ binomlogit.ddfull <- glm(data = fdd2018.reasonable,
                          family = binomial(link = "logit"))
 
 #above but without the weird precincts
-binomlogit.ddfull <- glm(data = fdd2018r.noweirdprec, 
+binomlogit.ddfull2 <- glm(data = fdd2018r.noweirdprec, 
                          voted2018 ~ female + age + 
                            race.eth + log(estimate) + ddistmiles + 
-                           race.eth*log(estimate), 
+                           voted2016b + race.eth*log(estimate), 
                          family = binomial(link = "logit"))
 
 #defining cost function for misclassification error rate
